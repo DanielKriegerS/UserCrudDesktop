@@ -1,6 +1,6 @@
 package com.danielks.UserCrud.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
