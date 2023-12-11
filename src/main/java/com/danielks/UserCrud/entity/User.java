@@ -12,36 +12,36 @@ public class User {
     private Long id;
 
     @Column(name = "nome")
-    private String nome;
+    private String name;
 
     @Column(name = "telefone")
-    private String telefone;
+    private String phone;
 
     public User() {
     }
 
-    public User(Long id, String nome, String telefone) {
+    public User(Long id, String name, String phone) {
         this.id = id;
-        this.nome = nome;
-        this.telefone = telefone;
+        this.name = name;
+        this.phone = phone;
     }
     public Long getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String nome) {
+        this.name = nome;
     }
 
-    public String getTelefone() {
-        return telefone;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
+    public void setPhone(String telefone) {
+        this.phone = telefone;
     }
 }

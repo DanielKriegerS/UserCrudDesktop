@@ -4,13 +4,16 @@ import com.danielks.UserCrud.entity.User;
 import com.danielks.UserCrud.service.UserService;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainScreen extends JFrame {
 
     private final UserService userService;
+    private Object[][] data;
+    private JTable table;
+    private String[] columns = {"ID", "Nome", "Telefone"};
     public MainScreen(UserService userService) {
         this.userService = userService;
         setTitle("Users List");
@@ -18,14 +21,7 @@ public class MainScreen extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        List<String[]> tasks = Arrays.asList(
-                new String[]{"1", "Task 1", "Description 1", "2023-01-01", "Pending"},
-                new String[]{"2", "Task 2", "Description 2", "2023-01-05", "In Progress"},
-                new String[]{"3", "Task 3", "Description 3", "2023-01-10", "Completed"}
-        );
-
-        String[] columns = {"ID", "Title", "Description", "Date Registered", "Situation"};
-        Object[][] data = convertToObjects(tasks);
+        refreshTableData();
 
         JTable table = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -71,10 +67,13 @@ public class MainScreen extends JFrame {
             String phone = phoneField.getText();
 
             User newUser = new User();
-            newUser.setNome(name);
-            newUser.setTelefone(phone);
+            newUser.setName(name);
+            newUser.setPhone(phone);
 
             userService.save(newUser);
+            refreshTableData();
+
+            table.setModel(new DefaultTableModel(data, columns));
         });
 
         panel.add(inputPanel, BorderLayout.SOUTH);
@@ -86,20 +85,31 @@ public class MainScreen extends JFrame {
             if (!e.getValueIsAdjusting()) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
-                    String[] userDetails = (String[]) data[selectedRow];
+                    User selectedUser = getUserFromRow(selectedRow);
                     dispose();
-                    new UserInfo(userDetails, userService);
+                    new UserInfo(selectedUser, userService);
                 }
             }
         });
     }
+    private void refreshTableData() {
+        List<User> userList = userService.getAllUsers();
+        data = convertToObjects(userList);
+     }
 
-    private Object[][] convertToObjects(List<String[]> tasks) {
-        Object[][] data = new Object[tasks.size()][];
-        for (int i = 0; i < tasks.size(); i++) {
-            data[i] = tasks.get(i);
+    private Object[][] convertToObjects(List<User> userList) {
+        Object[][] newData = new Object[userList.size()][5];
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            newData[i][0] = user.getId();
+            newData[i][1] = user.getName();
+            newData[i][2] = user.getPhone();
         }
-        return data;
+        return newData;
     }
 
+    private User getUserFromRow(int row) {
+        long userId = (long) data[row][0];
+        return userService.getUserById(userId);
+    }
 }
